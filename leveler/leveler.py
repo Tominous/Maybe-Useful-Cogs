@@ -124,8 +124,8 @@ class Leveler:
         em.add_field(name="Global Rank:", value = '#{}'.format(await self._find_global_rank(user)))
         em.add_field(name="Server Rank:", value = '#{}'.format(await self._find_server_rank(user, server)))
         em.add_field(name="Server Level:", value = format(userinfo["servers"][server.id]["level"]))
-        em.add_field(name="Total Exp:", value = userinfo["total_exp"])
-        em.add_field(name="Server Exp:", value = await self._find_server_exp(user, server))
+        em.add_field(name="Total EXP:", value = userinfo["total_exp"])
+        em.add_field(name="Server EXP:", value = await self._find_server_exp(user, server))
         try:
             bank = self.bot.get_cog('Economy').bank
             if bank.account_exists(user):
@@ -181,7 +181,7 @@ class Leveler:
         em.add_field(name="Server Rank", value = '#{}'.format(await self._find_server_rank(user, server)))
         em.add_field(name="Reps", value = userinfo["rep"])
         em.add_field(name="Server Level", value = userinfo["servers"][server.id]["level"])
-        em.add_field(name="Server Exp", value = await self._find_server_exp(user, server))
+        em.add_field(name="Server EXP", value = await self._find_server_exp(user, server))
         em.set_author(name="Rank and Statistics for {}".format(user.name), url = user.avatar_url)
         em.set_thumbnail(url=user.avatar_url)
         return em
@@ -223,7 +223,7 @@ class Leveler:
                 await self._find_global_rep_rank(user), board_type, user_stat)
             icon_url = self.bot.user.avatar_url
         elif '-global' in options:
-            title = "Global Exp Leaderboard for {}\n".format(self.bot.user.name)
+            title = "Global EXP Leaderboard for {}\n".format(self.bot.user.name)
             for userinfo in db.users.find({}):
                 try:
                     users.append((userinfo["username"], userinfo["total_exp"]))
@@ -256,7 +256,7 @@ class Leveler:
                 await self._find_server_rep_rank(user, server), board_type, user_stat)
             icon_url = server.icon_url
         else:
-            title = "Exp Leaderboard for {}\n".format(server.name)
+            title = "EXP Leaderboard for {}\n".format(server.name)
             for userinfo in db.users.find({}):
                 try:
                     userid = userinfo["user_id"]
@@ -391,8 +391,8 @@ class Leveler:
         for i in range(userinfo["servers"][server.id]["level"]):
             total_server_exp += self._required_exp(i)
         total_server_exp += userinfo["servers"][server.id]["current_exp"]
-        msg += "Server Exp: {}\n".format(total_server_exp)
-        msg += "Total Exp: {}\n".format(userinfo["total_exp"])
+        msg += "Server EXP: {}\n".format(total_server_exp)
+        msg += "Total EXP: {}\n".format(userinfo["total_exp"])
         msg += "Info: {}\n".format(userinfo["info"])
         msg += "Profile background: {}\n".format(userinfo["profile_background"])
         msg += "Rank background: {}\n".format(userinfo["rank_background"])
@@ -455,7 +455,7 @@ class Leveler:
 
     @profileset.command(name = "color", pass_context=True, no_pm=True)
     async def profilecolors(self, ctx, section:str, color:str):
-        """Set info color. e.g [p]lvlset profile color [exp|rep|badge|info|all] [default|white|hex|auto]"""
+        """Set info colour. e.g [p]lvlset profile color [exp|rep|badge|info|all] [default|white|hex|auto]"""
         user = ctx.message.author
         server = ctx.message.server
         # creates user if doesn't exist
@@ -528,7 +528,7 @@ class Leveler:
         elif self._is_hex(color):
             set_color = [self._hex_to_rgb(color, default_a)]
         else:
-            await self.bot.say("**Not a valid color. (default, hex, white, auto)**")
+            await self.bot.say("**Not a valid colour. (default, hex, white, auto)**")
             return
 
         if section == "all":
@@ -553,17 +553,17 @@ class Leveler:
                         "badge_col_color": set_color[2],
                         "profile_info_color": set_color[3]
                     }})
-            await self.bot.say("**Colors for profile set.**")
+            await self.bot.say("**Colours for profile set.**")
         else:
             print("update one")
             db.users.update_one({'user_id':user.id}, {'$set':{
                     section_name: set_color[0]
                 }})
-            await self.bot.say("**Color for profile {} set.**".format(section))
+            await self.bot.say("**Colour for profile {} set.**".format(section))
 
     @rankset.command(name = "color", pass_context=True, no_pm=True)
     async def rankcolors(self, ctx, section:str, color:str = None):
-        """Set info color. e.g [p]lvlset rank color [exp|info] [default|white|hex|auto]"""
+        """Set info colour. e.g [p]lvlset rank color [exp|info] [default|white|hex|auto]"""
         user = ctx.message.author
         server = ctx.message.server
         # creates user if doesn't exist
@@ -621,7 +621,7 @@ class Leveler:
         elif self._is_hex(color):
             set_color = [self._hex_to_rgb(color, default_a)]
         else:
-            await self.bot.say("**Not a valid color. (default, hex, white, auto)**")
+            await self.bot.say("**Not a valid colour. (default, hex, white, auto)**")
             return
 
         if section == "all":
@@ -640,16 +640,16 @@ class Leveler:
                         "rank_exp_color": set_color[0],
                         "rank_info_color": set_color[1]
                     }})
-            await self.bot.say("**Colors for rank set.**")
+            await self.bot.say("**Colours for rank set.**")
         else:
             db.users.update_one({'user_id':user.id}, {'$set':{
                     section_name: set_color[0]
                 }})
-            await self.bot.say("**Color for rank {} set.**".format(section))
+            await self.bot.say("**Colour for rank {} set.**".format(section))
 
     @levelupset.command(name = "color", pass_context=True, no_pm=True)
     async def levelupcolors(self, ctx, section:str, color:str = None):
-        """Set info color. e.g [p]lvlset color [info] [default|white|hex|auto]"""
+        """Set info colour. e.g [p]lvlset color [info] [default|white|hex|auto]"""
         user = ctx.message.author
         server = ctx.message.server
         # creates user if doesn't exist
@@ -693,17 +693,17 @@ class Leveler:
         elif self._is_hex(color):
             set_color = [self._hex_to_rgb(color, default_a)]
         else:
-            await self.bot.say("**Not a valid color. (default, hex, white, auto)**")
+            await self.bot.say("**Not a valid colour. (default, hex, white, auto)**")
             return
 
         db.users.update_one({'user_id':user.id}, {'$set':{
                 section_name: set_color[0]
             }})
-        await self.bot.say("**Color for level-up {} set.**".format(section))
+        await self.bot.say("**Colour for level-up {} set.**".format(section))
 
     # uses k-means algorithm to find color from bg, rank is abundance of color, descending
     async def _auto_color(self, url:str, ranks):
-        phrases = ["Calculating colors..."] # in case I want more
+        phrases = ["Calculating colours..."] # in case I want more
         #try:
         await self.bot.say("**{}**".format(random.choice(phrases)))
         clusters = 10
@@ -739,8 +739,8 @@ class Leveler:
 
             colors.append(''.join(format(c, '02x') for c in peak))
         return colors # returns array
-        #except:
-            #await self.bot.say("```Error or no scipy. Install scipy doing 'pip3 install numpy' and 'pip3 install scipy' or read here: https://github.com/AznStevy/Maybe-Useful-Cogs/blob/master/README.md```")
+        except:
+            await self.bot.say("```Error or no scipy. Install scipy doing 'pip3 install numpy' and 'pip3 install scipy' or read here: https://github.com/AznStevy/Maybe-Useful-Cogs/blob/master/README.md```")
 
     # converts hex to rgb
     def _hex_to_rgb(self, hex_num: str, a:int):
@@ -1431,7 +1431,7 @@ class Leveler:
             return
 
         if not self._is_hex(border_color):
-            await self.bot.say("**Border color is not valid!**")
+            await self.bot.say("**Border colour is not valid!**")
             return
 
         if price < -1:
@@ -2092,7 +2092,7 @@ class Leveler:
         # draw text box
         draw.rectangle([(0,324), (340, 390)], fill=(info_fill[0],info_fill[1],info_fill[2],255)) # box
 
-        #rep_text = "{} REP".format(userinfo["rep"])
+        rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
         _write_unicode("❤", 257, 9, rep_fnt, rep_u_fnt, info_text_color)
         draw.text((self._center(278, 340, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
@@ -2146,8 +2146,8 @@ class Leveler:
         margin = 140
         txt_color = self._contrast(info_fill, white_color, dark_color)
         for line in textwrap.wrap(userinfo["info"], width=32):
-        # for line in textwrap.wrap('userinfo["info"]', width=200):
-            # draw.text((margin, offset), line, font=text_fnt, fill=white_color)
+         for line in textwrap.wrap('userinfo["info"]', width=200):
+             draw.text((margin, offset), line, font=text_fnt, fill=white_color)
             _write_unicode(line, margin, offset, text_fnt, text_u_fnt, txt_color)
             offset += text_fnt.getsize(line)[1] + 2
 
@@ -2616,7 +2616,7 @@ class Leveler:
             exp_color = (140,140,140,230)
         draw_overlay.rectangle([(0,20), (exp_width,30)], fill=exp_color) # Exp bar
         draw_overlay.rectangle([(0,30), (bg_width,31)], fill=(0,0,0,255)) # Divider
-        # draw_overlay.rectangle([(0,35), (bg_width,100)], fill=(230,230,230,0)) # title overlay
+         draw_overlay.rectangle([(0,35), (bg_width,100)], fill=(230,230,230,0)) # title overlay
         for i in range(0,70):
             draw_overlay.rectangle([(0,height-i), (bg_width,height-i)], fill=(20,20,20,255-i*3)) # title overlay
 
@@ -2953,8 +2953,8 @@ class Leveler:
         if float(curr_time) - float(userinfo["chat_block"]) >= 120 and not any(text.startswith(x) for x in prefix):
             await self._process_exp(message, userinfo, random.randint(15, 20))
             await self._give_chat_credit(user, server)
-        #except AttributeError as e:
-            #pass
+        except AttributeError as e:
+            pass
 
     async def _process_exp(self, message, userinfo, exp:int):
         server = message.author.server
